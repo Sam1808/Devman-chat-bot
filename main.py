@@ -12,7 +12,7 @@ if __name__ == "__main__":
 
     DEVMAN_TOKEN = env.str('DEVMAN_TOKEN')
     TELEGRAM_TOKEN = env.str('TELEGRAM_TOKEN')
-    CHAT_ID=env.int('CHAT_ID')
+    TG_CHAT_ID = env.int('TG_CHAT_ID')
 
     bot = telegram.Bot(token=TELEGRAM_TOKEN)
 
@@ -45,15 +45,15 @@ if __name__ == "__main__":
             URL: https://dvmn.org/{result['new_attempts'][0]['lesson_url']}
             '''
                 
-            bot.send_message(chat_id=CHAT_ID, text=message)
+            bot.send_message(chat_id=TG_CHAT_ID, text=message)
                             
             if errors:
                 message = 'You have to work harder!!!'
-                bot.send_message(chat_id=CHAT_ID, text=message)
+                bot.send_message(chat_id=TG_CHAT_ID, text=message)
                 continue
                 
             message = 'Congratulations! It is time to take on a new task'
-            bot.send_message(chat_id=CHAT_ID, text=message)
+            bot.send_message(chat_id=TG_CHAT_ID, text=message)
 
         except ReadTimeout as err:
             print(err)

@@ -23,12 +23,12 @@ git clone https://github.com/Sam1808/Devman-chat-bot.git
 ```
 DEVMAN_TOKEN=ваш_Devman_токен
 TELEGRAM_TOKEN=ваш_Telegram_токен
-CHAT_ID=номер_(ID)_вашего_чата
+TG_CHAT_ID=номер_(ID)_вашего_Telegram_чата
 ```
-*Важно: если у вас проблема с CHAT_ID, то напишите в Telegram специальному боту: @userinfobot. Данный параметр может быть только цифровой.*
+*Важно: если у вас проблема с TG_CHAT_ID, то напишите в Telegram специальному боту: @userinfobot. Данный параметр может быть только цифровой.*
 - Установите зависимости (используйте [виртуальное окружение](https://pythoner.name/documentation/tutorial/venv))
 ```
-pip freeze -r requirements.txt
+pip install -r requirements.txt
 ```
 - Запустите код
 ```
