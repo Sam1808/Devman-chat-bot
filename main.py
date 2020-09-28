@@ -24,34 +24,36 @@ if __name__ == "__main__":
     while True:
         try:
                         
-            respond = requests.get(polling_url,headers = headers, params=payload) 
-            respond.raise_for_status()
-            result = respond.json()
+            response = requests.get(polling_url,headers = headers, params=payload) 
+            response.raise_for_status()
+            result = response.json()
             
             if 'timestamp_to_request' in result:
                 payload= {
                     'timestamp': str(result['timestamp_to_request'])
                 }
             
-            if 'status' in result:
-                errors = result['new_attempts'][0]['is_negative']
+            if not 'status' in result:
+                continue
+            
+            errors = result['new_attempts'][0]['is_negative']
                 
-                message = f'''
-                The task has been verified:
-                Title: {result['new_attempts'][0]['lesson_title']}
-                Errors: {errors}
-                URL: https://dvmn.org/{result['new_attempts'][0]['lesson_url']}
-                '''
+            message = f'''
+            The task has been verified:
+            Title: {result['new_attempts'][0]['lesson_title']}
+            Errors: {errors}
+            URL: https://dvmn.org/{result['new_attempts'][0]['lesson_url']}
+            '''
                 
-                bot.send_message(chat_id=CHAT_ID, text=message)
+            bot.send_message(chat_id=CHAT_ID, text=message)
                             
-                if errors:
-                    message = 'You have to work harder!!!'
-                    bot.send_message(chat_id=CHAT_ID, text=message)
-                    continue
-                
-                message = 'Congratulations! It is time to take on a new task'
+            if errors:
+                message = 'You have to work harder!!!'
                 bot.send_message(chat_id=CHAT_ID, text=message)
+                continue
+                
+            message = 'Congratulations! It is time to take on a new task'
+            bot.send_message(chat_id=CHAT_ID, text=message)
 
         except ReadTimeout as err:
             print(err)
