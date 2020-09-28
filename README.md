@@ -7,10 +7,10 @@
 
 ### Что необходимо: 
 
-- Учетную запись [Devman.org](https://dvmn.org/) и его бесплатный доступ к [API](https://dvmn.org/api/docs/)
-- Своего [Телеграм бота](https://telegram.me/BotFather) и его ID
-- Выполненые задания от [Devman.org](https://dvmn.org/)
-- Желание учиться дальше
+- Учетная запись [Devman.org](https://dvmn.org/) и бесплатный доступ к [API](https://dvmn.org/api/docs/)
+- Свой [Телеграм бот](https://telegram.me/BotFather) и его ID
+- Выполнить задания от [Devman.org](https://dvmn.org/)
+- Желать учиться дальше
 </br></br>
 ### Установка и использование.
 
