@@ -6,7 +6,7 @@ from environs import Env
 
 
 if __name__ == "__main__":
-    
+
     env = Env()
     env.read_env()  # read .env file
 
@@ -23,35 +23,39 @@ if __name__ == "__main__":
 
     while True:
         try:
-                        
-            response = requests.get(polling_url,headers = headers, params=payload) 
+
+            response = requests.get(
+                polling_url,
+                headers=headers,
+                params=payload,
+                )
             response.raise_for_status()
             result = response.json()
-            
+            print(result)
             if 'timestamp_to_request' in result:
-                payload= {
+                payload = {
                     'timestamp': str(result['timestamp_to_request'])
                 }
-            
-            if not 'status' in result:
+
+            if 'status' not in result:
                 continue
-            
+
             errors = result['new_attempts'][0]['is_negative']
-                
+
             message = f'''
             The task has been verified:
             Title: {result['new_attempts'][0]['lesson_title']}
             Errors: {errors}
             URL: https://dvmn.org/{result['new_attempts'][0]['lesson_url']}
             '''
-                
+
             bot.send_message(chat_id=TG_CHAT_ID, text=message)
-                            
+
             if errors:
                 message = 'You have to work harder!!!'
                 bot.send_message(chat_id=TG_CHAT_ID, text=message)
                 continue
-                
+
             message = 'Congratulations! It is time to take on a new task'
             bot.send_message(chat_id=TG_CHAT_ID, text=message)
 
