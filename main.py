@@ -1,6 +1,7 @@
 
 import requests
 import telegram
+import time
 from requests.exceptions import ReadTimeout, ConnectionError
 from environs import Env
 
@@ -20,10 +21,10 @@ if __name__ == "__main__":
 
     polling_url = 'https://dvmn.org/api/long_polling/'
     payload = {}
+    request_delay_seconds = 2
 
     while True:
         try:
-
             response = requests.get(
                 polling_url,
                 headers=headers,
@@ -31,13 +32,15 @@ if __name__ == "__main__":
                 )
             response.raise_for_status()
             result = response.json()
-            print(result)
+            request_delay_seconds = 2
+
             if 'timestamp_to_request' in result:
+                timestamp_to_request = str(result['timestamp_to_request'])
                 payload = {
-                    'timestamp': str(result['timestamp_to_request'])
+                    'timestamp': timestamp_to_request
                 }
 
-            if 'status' not in result:
+            if 'found' not in result:
                 continue
 
             errors = result['new_attempts'][0]['is_negative']
@@ -59,7 +62,10 @@ if __name__ == "__main__":
             message = 'Congratulations! It is time to take on a new task'
             bot.send_message(chat_id=TG_CHAT_ID, text=message)
 
-        except ReadTimeout as err:
-            print(err)
+        except ReadTimeout:
+            pass
         except ConnectionError as err:
             print(err)
+            print(f'Request dealay: {request_delay_seconds} sec.')
+            time.sleep(request_delay_seconds)
+            request_delay_seconds += request_delay_seconds
