@@ -9,7 +9,7 @@ from environs import Env
 if __name__ == "__main__":
 
     env = Env()
-    env.read_env()  # read .env file
+    env.read_env()
 
     DEVMAN_TOKEN = env.str('DEVMAN_TOKEN')
     TELEGRAM_TOKEN = env.str('TELEGRAM_TOKEN')
@@ -21,7 +21,7 @@ if __name__ == "__main__":
 
     polling_url = 'https://dvmn.org/api/long_polling/'
     payload = {}
-    request_delay_seconds = 2
+    deferred_request_in_seconds = 2
 
     while True:
         try:
@@ -29,43 +29,52 @@ if __name__ == "__main__":
                 polling_url,
                 headers=headers,
                 params=payload,
+                timeout=100,
                 )
             response.raise_for_status()
             result = response.json()
-            request_delay_seconds = 2
+            deferred_request_in_seconds = 2
 
             if 'timestamp_to_request' in result:
-                timestamp_to_request = str(result['timestamp_to_request'])
                 payload = {
-                    'timestamp': timestamp_to_request
+                    'timestamp': str(result['timestamp_to_request'])
+                }
+            elif 'last_attempt_timestamp' in result:
+                payload = {
+                    'timestamp': str(result['last_attempt_timestamp'])
                 }
 
-            if 'found' not in result:
+            if 'new_attempts' not in result:
                 continue
 
-            errors = result['new_attempts'][0]['is_negative']
+            # we have a chance for a few checks
+            for attempt in result['new_attempts']:
 
-            message = f'''
-            The task has been verified:
-            Title: {result['new_attempts'][0]['lesson_title']}
-            Errors: {errors}
-            URL: https://dvmn.org/{result['new_attempts'][0]['lesson_url']}
-            '''
+                errors = attempt['is_negative']
 
-            bot.send_message(chat_id=TG_CHAT_ID, text=message)
+                message = f'''
+                The task has been verified:
+                Title: {attempt['lesson_title']}
+                Errors: {errors}
+                URL: https://dvmn.org/{attempt['lesson_url']}
+                '''
 
-            if errors:
-                message = 'You have to work harder!!!'
                 bot.send_message(chat_id=TG_CHAT_ID, text=message)
-                continue
 
-            message = 'Congratulations! It is time to take on a new task'
-            bot.send_message(chat_id=TG_CHAT_ID, text=message)
+                if errors:
+                    message = 'You have to work harder!!!'
+                    bot.send_message(chat_id=TG_CHAT_ID, text=message)
+                    continue
+
+                message = 'Congratulations! It is time to take on a new task!'
+                bot.send_message(chat_id=TG_CHAT_ID, text=message)
 
         except ReadTimeout:
             pass
         except ConnectionError as err:
             print(err)
-            print(f'Request dealay: {request_delay_seconds} sec.')
-            time.sleep(request_delay_seconds)
-            request_delay_seconds += request_delay_seconds
+            print(
+                f'Request after: {deferred_request_in_seconds} sec.'
+                )
+            time.sleep(deferred_request_in_seconds)
+            deferred_request_in_seconds += deferred_request_in_seconds
