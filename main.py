@@ -47,7 +47,7 @@ if __name__ == "__main__":
                 The task has been verified:
                 Title: {attempt['lesson_title']}
                 Errors: {errors}
-                URL: https://dvmn.org/{attempt['lesson_url']}
+                URL: https://dvmn.org{attempt['lesson_url']}
                 '''
 
                 if errors:
