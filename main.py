@@ -1,4 +1,3 @@
-
 import requests
 import telegram
 import time
@@ -13,7 +12,7 @@ if __name__ == "__main__":
 
     DEVMAN_TOKEN = env.str('DEVMAN_TOKEN')
     TELEGRAM_TOKEN = env.str('TELEGRAM_TOKEN')
-    TG_CHAT_ID = env.int('TG_CHAT_ID')
+    TELEGRAM_CHAT_ID = env.int('TELEGRAM_CHAT_ID')
 
     bot = telegram.Bot(token=TELEGRAM_TOKEN)
 
@@ -23,8 +22,8 @@ if __name__ == "__main__":
     payload = {}
     deferred_request_in_seconds = 2
 
-    while True:
-        try:
+    while True:  # This code has been checked
+        try:     # at http://pep8online.com/checkresult with status "All right"
             response = requests.get(
                 polling_url,
                 headers=headers,
@@ -35,23 +34,15 @@ if __name__ == "__main__":
             result = response.json()
             deferred_request_in_seconds = 2
 
-            if 'timestamp_to_request' in result:
-                payload = {
-                    'timestamp': str(result['timestamp_to_request'])
-                }
-            elif 'last_attempt_timestamp' in result:
-                payload = {
-                    'timestamp': str(result['last_attempt_timestamp'])
-                }
-
-            if 'new_attempts' not in result:
+            if 'timeout' in result['status']:
+                payload['timestamp'] = result['timestamp_to_request']
                 continue
 
-            # we have a chance for a few checks
+            payload['timestamp'] = result['last_attempt_timestamp']
+
             for attempt in result['new_attempts']:
 
                 errors = attempt['is_negative']
-
                 message = f'''
                 The task has been verified:
                 Title: {attempt['lesson_title']}
@@ -59,22 +50,22 @@ if __name__ == "__main__":
                 URL: https://dvmn.org/{attempt['lesson_url']}
                 '''
 
-                bot.send_message(chat_id=TG_CHAT_ID, text=message)
-
                 if errors:
-                    message = 'You have to work harder!!!'
-                    bot.send_message(chat_id=TG_CHAT_ID, text=message)
+                    bot.send_message(
+                        chat_id=TELEGRAM_CHAT_ID,
+                        text=f'You have to work harder! {message}'
+                        )
                     continue
 
-                message = 'Congratulations! It is time to take on a new task!'
-                bot.send_message(chat_id=TG_CHAT_ID, text=message)
+                bot.send_message(
+                    chat_id=TELEGRAM_CHAT_ID,
+                    text=f'Congratulations! {message}'
+                    )
 
         except ReadTimeout:
             pass
         except ConnectionError as err:
             print(err)
-            print(
-                f'Request after: {deferred_request_in_seconds} sec.'
-                )
+            print(f'Request after: {deferred_request_in_seconds} sec.')
             time.sleep(deferred_request_in_seconds)
             deferred_request_in_seconds += deferred_request_in_seconds

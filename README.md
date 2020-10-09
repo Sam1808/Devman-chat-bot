@@ -1,7 +1,7 @@
 ## Чат-бот для Telegram проверки заданий [Devman.org](https://dvmn.org/)
 </br>
 
-### Просто запустите этого бота, чтобы вовремя знать о поступающих проверках ваших заданий.
+Просто запустите этого бота, чтобы вовремя знать о поступающих проверках ваших заданий.
 
 </br>
 
@@ -23,7 +23,7 @@ git clone https://github.com/Sam1808/Devman-chat-bot.git
 ```
 DEVMAN_TOKEN=ваш_Devman_токен
 TELEGRAM_TOKEN=ваш_Telegram_токен
-TG_CHAT_ID=номер_(ID)_вашего_Telegram_чата
+TELEGRAM_CHAT_ID=номер_(ID)_вашего_Telegram_чата
 ```
 *Важно: если у вас проблема с TG_CHAT_ID, то напишите в Telegram специальному боту: @userinfobot. Данный параметр может быть только цифровой.*
 - Установите зависимости (используйте [виртуальное окружение](https://pythoner.name/documentation/tutorial/venv))
