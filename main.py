@@ -22,14 +22,14 @@ if __name__ == "__main__":
     payload = {}
     deferred_request_in_seconds = 2
 
-    while True:  # This code has been checked
-        try:     # at http://pep8online.com/checkresult with status "All right"
+    while True:
+        try:
             response = requests.get(
                 polling_url,
                 headers=headers,
                 params=payload,
                 timeout=100,
-                )
+            )
             response.raise_for_status()
             result = response.json()
             deferred_request_in_seconds = 2
