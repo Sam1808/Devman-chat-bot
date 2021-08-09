@@ -1,6 +1,7 @@
 import requests
 import telegram
 import time
+import os
 from requests.exceptions import ReadTimeout, ConnectionError
 from environs import Env
 
@@ -10,9 +11,9 @@ if __name__ == "__main__":
     env = Env()
     env.read_env()
 
-    DEVMAN_TOKEN = env.str('DEVMAN_TOKEN')
-    TELEGRAM_TOKEN = env.str('TELEGRAM_TOKEN')
-    TELEGRAM_CHAT_ID = env.int('TELEGRAM_CHAT_ID')
+    DEVMAN_TOKEN = env.str('DEVMAN_TOKEN') or os.environ['DEVMAN_TOKEN']
+    TELEGRAM_TOKEN = env.str('TELEGRAM_TOKEN') or os.environ['TELEGRAM_TOKEN']
+    TELEGRAM_CHAT_ID = env.int('TELEGRAM_CHAT_ID') or os.environ['TELEGRAM_CHAT_ID']
 
     bot = telegram.Bot(token=TELEGRAM_TOKEN)
 
