@@ -15,7 +15,7 @@ if __name__ == "__main__":
     DEVMAN_TOKEN = env.str('DEVMAN_TOKEN') or os.environ['DEVMAN_TOKEN']
     TELEGRAM_TOKEN = env.str('TELEGRAM_TOKEN') or os.environ['TELEGRAM_TOKEN']
     TELEGRAM_CHAT_ID = env.int('TELEGRAM_CHAT_ID') or os.environ['TELEGRAM_CHAT_ID']
-    debug = env.bool('DEBUG')
+    debug = env.bool('DEBUG') or os.environ['DEBUG']
 
     logging.basicConfig(level=logging.INFO)
     if debug:
