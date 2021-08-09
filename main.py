@@ -1,3 +1,4 @@
+import logging
 import requests
 import telegram
 import time
@@ -14,6 +15,11 @@ if __name__ == "__main__":
     DEVMAN_TOKEN = env.str('DEVMAN_TOKEN') or os.environ['DEVMAN_TOKEN']
     TELEGRAM_TOKEN = env.str('TELEGRAM_TOKEN') or os.environ['TELEGRAM_TOKEN']
     TELEGRAM_CHAT_ID = env.int('TELEGRAM_CHAT_ID') or os.environ['TELEGRAM_CHAT_ID']
+    debug = env.bool('DEBUG')
+
+    logging.basicConfig(level=logging.INFO)
+    if debug:
+        logging.basicConfig(level=logging.DEBUG)
 
     bot = telegram.Bot(token=TELEGRAM_TOKEN)
 
@@ -24,6 +30,7 @@ if __name__ == "__main__":
     deferred_request_in_seconds = 2
 
     while True:
+        logging.info('Start bot')
         try:
             response = requests.get(
                 polling_url,
@@ -64,8 +71,10 @@ if __name__ == "__main__":
                     )
 
         except ReadTimeout:
+            logging.debug('Error ReadTimeout')
             pass
         except ConnectionError as err:
+            logging.debug('Error ConnectionError. Details:')
             print(err)
             print(f'Request after: {deferred_request_in_seconds} sec.')
             time.sleep(deferred_request_in_seconds)
