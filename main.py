@@ -11,8 +11,6 @@ class TelegramLogsHandler(logging.Handler):
 
     def __init__(self, log_bot, chat_id):
         super().__init__()
-        # self.chat_id = TELEGRAM_CHAT_ID
-        # self.tg_bot = telegram.Bot(token=TELEGRAM_TOKEN)
         self.chat_id = chat_id
         self.tg_bot = log_bot
         self.tg_bot.send_message(chat_id=self.chat_id, text='LOG-BOT: started')
@@ -29,8 +27,8 @@ if __name__ == "__main__":
     DEVMAN_TOKEN = env.str('DEVMAN_TOKEN') or os.environ['DEVMAN_TOKEN']
     TELEGRAM_TOKEN = env.str('TELEGRAM_TOKEN') or os.environ['TELEGRAM_TOKEN']
     TELEGRAM_CHAT_ID = env.int('TELEGRAM_CHAT_ID') or os.environ['TELEGRAM_CHAT_ID']
-
     debug = env.bool('DEBUG') or os.environ['DEBUG']
+
     logging.basicConfig(level=logging.INFO)
     if debug:
         logging.basicConfig(level=logging.DEBUG)
@@ -38,7 +36,7 @@ if __name__ == "__main__":
     bot = telegram.Bot(token=TELEGRAM_TOKEN)
 
     logger = logging.getLogger('Logger')
-    logger.setLevel(logging.INFO)  # TODO: Turn log level in .env
+    logger.setLevel(logging.INFO)
     logger.addHandler(TelegramLogsHandler(bot, TELEGRAM_CHAT_ID))
 
     headers = {'Authorization': f'Token {DEVMAN_TOKEN}'}
@@ -90,9 +88,11 @@ if __name__ == "__main__":
                         text=f'Congratulations! {message}'
                         )
             except ReadTimeout:
+                logger.info('Bot catch ReadTimeout exception. Need your attention.')
                 logging.debug('Error ReadTimeout')
                 pass
             except ConnectionError as err:
+                logger.info('Bot catch ConnectionError exception. Need your attention.')
                 logging.debug('Error ConnectionError. Details:')
                 print(err)
                 print(f'Request after: {deferred_request_in_seconds} sec.')
