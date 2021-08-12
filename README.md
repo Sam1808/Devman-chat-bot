@@ -5,7 +5,7 @@
 - Учетная запись [Devman.org](https://dvmn.org/) и бесплатный доступ к [API](https://dvmn.org/api/docs/)
 - Свой [Телеграм бот](https://telegram.me/BotFather) и его ID
 - Выполнить задания от [Devman.org](https://dvmn.org/)
-- Учетная запись [HEROKU](https://id.heroku.com/login) и выложенный код на [GitHub](https://https://github.com) для деплоя своего бота.
+- Учетная запись [HEROKU](https://id.heroku.com/login) и выложенный код на [GitHub](https://github.com) для деплоя своего бота.
 
 ### Установка и использование.
 
@@ -21,8 +21,8 @@ TELEGRAM_TOKEN=ваш_Telegram_токен
 TELEGRAM_CHAT_ID=номер_(ID)_вашего_Telegram_чата
 DEBUG=True
 ```
-*Важно: если у вас проблема с TELEGRAM_CHAT_ID, то напишите в Telegram специальному боту @userinfobot. Данный параметр может быть только цифровой.*
-- Установите зависимости (используйте [виртуальное окружение](https://pythoner.name/documentation/tutorial/venv))
+**Важно**: если у вас проблема с TELEGRAM_CHAT_ID, то напишите в Telegram специальному боту @userinfobot. Данный параметр может быть только цифровой.
+- Установите зависимости (используйте [виртуальное окружение](https://devman.org/encyclopedia/pip/pip_virtualenv/)
 ```
 pip install -r requirements.txt
 ```
@@ -52,4 +52,3 @@ python3 main.py
 ### Ошибки.
 Код сообщит в консоли о факте проблем с соединением и запустит следующее соединение после паузы.
 > А ещё он пришлет вам текст ошибок в чат.
-
