@@ -22,7 +22,7 @@ TELEGRAM_CHAT_ID=номер_(ID)_вашего_Telegram_чата
 DEBUG=True
 ```
 **Важно**: если у вас проблема с TELEGRAM_CHAT_ID, то напишите в Telegram специальному боту @userinfobot. Данный параметр может быть только цифровой.
-- Установите зависимости (используйте [виртуальное окружение](https://devman.org/encyclopedia/pip/pip_virtualenv/)
+- Установите зависимости (используйте [виртуальное окружение](https://devman.org/encyclopedia/pip/pip_virtualenv/))
 ```
 pip install -r requirements.txt
 ```
@@ -31,7 +31,7 @@ pip install -r requirements.txt
 python3 main.py
 ```
 
-#### II. Разворачивание бота на HEROKU:
+#### II. Разворачиваем бота на HEROKU:
 - Опубликуйте код на GitHub.
 - Авторизуйтесь на HEROKU и [создайте приложение](https://dashboard.heroku.com/new-app?org=personal-apps).  
 - Подключите свой профиль GitHub и укажите репозиторий с кодом бота.
