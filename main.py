@@ -6,6 +6,8 @@ import os
 from requests.exceptions import ReadTimeout, ConnectionError
 from environs import Env
 
+logger = logging.getLogger('Logger')
+
 
 class TelegramLogsHandler(logging.Handler):
 
@@ -29,13 +31,11 @@ if __name__ == "__main__":
     TELEGRAM_CHAT_ID = env.int('TELEGRAM_CHAT_ID') or os.environ['TELEGRAM_CHAT_ID']
     debug = env.bool('DEBUG') or os.environ['DEBUG']
 
-    logging.basicConfig(level=logging.INFO)
-    if debug:
-        logging.basicConfig(level=logging.DEBUG)
+    level = logging.DEBUG if debug else logging.INFO
+    logging.basicConfig(level=level)
 
     bot = telegram.Bot(token=TELEGRAM_TOKEN)
 
-    logger = logging.getLogger('Logger')
     logger.setLevel(logging.INFO)
     logger.addHandler(TelegramLogsHandler(bot, TELEGRAM_CHAT_ID))
 
