@@ -1,8 +1,8 @@
 import logging
+import os
 import requests
 import telegram
 import time
-import os
 from requests.exceptions import ReadTimeout, ConnectionError
 from environs import Env
 
@@ -31,73 +31,77 @@ if __name__ == "__main__":
     TELEGRAM_CHAT_ID = env.int('TELEGRAM_CHAT_ID') or os.environ['TELEGRAM_CHAT_ID']
     debug = env.bool('DEBUG') or os.environ['DEBUG']
 
-    level = logging.DEBUG if debug else logging.INFO
+    if not type(debug) is bool:  # os.environ['DEBUG'] gets only string format
+        debug = True if os.environ['DEBUG'].lower() == 'true' else False
+
+    level = logging.DEBUG if bool(debug) else logging.INFO
     logging.basicConfig(level=level)
 
-    bot = telegram.Bot(token=TELEGRAM_TOKEN)
-
     logger.setLevel(logging.INFO)
-    logger.addHandler(TelegramLogsHandler(bot, TELEGRAM_CHAT_ID))
 
     headers = {'Authorization': f'Token {DEVMAN_TOKEN}'}
 
     polling_url = 'https://dvmn.org/api/long_polling/'
     payload = {}
-    deferred_request_in_seconds = 2
+    deferred_request_in_seconds = 2  # If a ConnectionError is received at the first start
 
-    try:
-        bot.send_message(chat_id=TELEGRAM_CHAT_ID, text='Devman bot started')
-        while True:
-            logging.debug('Run DEVMAN bot')
-            try:
-                response = requests.get(
-                    polling_url,
-                    headers=headers,
-                    params=payload,
-                    timeout=100,
-                )
-                response.raise_for_status()
-                result = response.json()
-                deferred_request_in_seconds = 2
+    while True:  # Restart bot for any Exception
+        try:
+            bot = telegram.Bot(token=TELEGRAM_TOKEN)
+            logger.addHandler(TelegramLogsHandler(bot, TELEGRAM_CHAT_ID))
+            bot.send_message(chat_id=TELEGRAM_CHAT_ID, text='Devman bot started')
 
-                if 'timeout' in result['status']:
-                    payload['timestamp'] = result['timestamp_to_request']
-                    continue
+            while True:  # Re-request if ReadTimeout or ConnectionError
+                logging.debug('Run DEVMAN bot')
+                try:
+                    response = requests.get(
+                        polling_url,
+                        headers=headers,
+                        params=payload,
+                        timeout=3,
+                    )
+                    response.raise_for_status()
+                    result = response.json()
+                    deferred_request_in_seconds = 2  # If a second ConnectionError is received after bot recovery
 
-                payload['timestamp'] = result['last_attempt_timestamp']
-
-                for attempt in result['new_attempts']:
-
-                    errors = attempt['is_negative']
-                    message = f'''
-                    The task has been verified:
-                    Title: {attempt['lesson_title']}
-                    Errors: {errors}
-                    URL: https://dvmn.org{attempt['lesson_url']}
-                    '''
-
-                    if errors:
-                        bot.send_message(
-                            chat_id=TELEGRAM_CHAT_ID,
-                            text=f'You have to work harder! {message}'
-                            )
+                    if 'timeout' in result['status']:
+                        payload['timestamp'] = result['timestamp_to_request']
                         continue
 
-                    bot.send_message(
-                        chat_id=TELEGRAM_CHAT_ID,
-                        text=f'Congratulations! {message}'
-                        )
-            except ReadTimeout:
-                logger.info('Bot catch ReadTimeout exception. Need your attention.')
-                logging.debug('Error ReadTimeout')
-                pass
-            except ConnectionError as err:
-                logger.info('Bot catch ConnectionError exception. Need your attention.')
-                logging.debug('Error ConnectionError. Details:')
-                print(err)
-                print(f'Request after: {deferred_request_in_seconds} sec.')
-                time.sleep(deferred_request_in_seconds)
-                deferred_request_in_seconds += deferred_request_in_seconds
-    except Exception as err:
-        logger.info('Error')
-        logger.exception(err)
+                    payload['timestamp'] = result['last_attempt_timestamp']
+
+                    for attempt in result['new_attempts']:
+
+                        errors = attempt['is_negative']
+                        message = f'''
+                        The task has been verified:
+                        Title: {attempt['lesson_title']}
+                        Errors: {errors}
+                        URL: https://dvmn.org{attempt['lesson_url']}
+                        '''
+
+                        if errors:
+                            bot.send_message(
+                                chat_id=TELEGRAM_CHAT_ID,
+                                text=f'You have to work harder! {message}'
+                                )
+                            continue
+
+                        bot.send_message(
+                            chat_id=TELEGRAM_CHAT_ID,
+                            text=f'Congratulations! {message}'
+                            )
+                except ReadTimeout:
+                    logging.debug('Error ReadTimeout')
+                    pass
+                except ConnectionError as err:
+                    logger.info('Bot catch ConnectionError exception. Need your attention.')
+                    logging.debug(
+                        f'''Error ConnectionError. Details:
+                        {err}
+                        Re-request after: {deferred_request_in_seconds} sec.'''
+                    )
+                    time.sleep(deferred_request_in_seconds)
+                    deferred_request_in_seconds += deferred_request_in_seconds
+        except Exception as err:
+            logging.exception(err)
