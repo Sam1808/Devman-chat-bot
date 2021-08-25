@@ -29,6 +29,7 @@ if __name__ == "__main__":
     TELEGRAM_TOKEN = env.str('TELEGRAM_TOKEN')
     TELEGRAM_CHAT_ID = env.int('TELEGRAM_CHAT_ID')
     debug = env.bool('DEBUG')
+    timeout = env.int('TIMEOUT')
 
     level = logging.DEBUG if debug else logging.INFO
     logging.basicConfig(level=level)
@@ -54,7 +55,7 @@ if __name__ == "__main__":
                         polling_url,
                         headers=headers,
                         params=payload,
-                        timeout=3,
+                        timeout=timeout,
                     )
                     response.raise_for_status()
                     result = response.json()
