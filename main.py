@@ -1,5 +1,4 @@
 import logging
-import os
 import requests
 import telegram
 import time
@@ -26,15 +25,12 @@ if __name__ == "__main__":
     env = Env()
     env.read_env()
 
-    DEVMAN_TOKEN = env.str('DEVMAN_TOKEN') or os.environ['DEVMAN_TOKEN']
-    TELEGRAM_TOKEN = env.str('TELEGRAM_TOKEN') or os.environ['TELEGRAM_TOKEN']
-    TELEGRAM_CHAT_ID = env.int('TELEGRAM_CHAT_ID') or os.environ['TELEGRAM_CHAT_ID']
-    debug = env.bool('DEBUG') or os.environ['DEBUG']
+    DEVMAN_TOKEN = env.str('DEVMAN_TOKEN')
+    TELEGRAM_TOKEN = env.str('TELEGRAM_TOKEN')
+    TELEGRAM_CHAT_ID = env.int('TELEGRAM_CHAT_ID')
+    debug = env.bool('DEBUG')
 
-    if not type(debug) is bool:  # os.environ['DEBUG'] gets only string format
-        debug = True if os.environ['DEBUG'].lower() == 'true' else False
-
-    level = logging.DEBUG if bool(debug) else logging.INFO
+    level = logging.DEBUG if debug else logging.INFO
     logging.basicConfig(level=level)
 
     logger.setLevel(logging.INFO)
